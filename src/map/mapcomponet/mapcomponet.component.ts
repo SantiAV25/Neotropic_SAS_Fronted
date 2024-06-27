@@ -3,6 +3,7 @@ import * as L from 'leaflet';
 import { CreateMapComponent } from '../create-map/create-map.component';
 import { MapserviceService } from '../services/mapservice.service';
 import { mark } from '../models/mark';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-mapcomponet',
@@ -13,9 +14,9 @@ import { mark } from '../models/mark';
 })
 export class MapcomponetComponent implements OnInit{
   private popup2 = L.popup();
-  private marks: any[] = [];
   private map!: L.Map;
   private centroid: L.LatLngExpression = [4.5709, -74.2973];
+  private mark: mark[] = [];
 
   constructor(
     private resolver: ComponentFactoryResolver,
@@ -24,16 +25,16 @@ export class MapcomponetComponent implements OnInit{
     private mapService: MapserviceService
   ) { }
 
-  private initMap(): void {
+  private initMap(): void{
     
     this.map = L.map('map', {
       center: this.centroid,
       zoom: 12
     });
 
-     this.getAllMarks();
 
-     console.log(this.marks)
+    console.log("Viene Las Marks");
+     console.log(this.mark);
 
     const tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 18,
@@ -43,8 +44,20 @@ export class MapcomponetComponent implements OnInit{
 
     tiles.addTo(this.map);
 
-    var marker = L.marker([4.5710, -74.2974]).addTo(this.map);
-    marker.bindPopup(this.CreateMapComponent("4.5710", "-74.2974")).openPopup();
+    this.mark.forEach((mark) => {
+      const { latitude, longitude, name, description } = mark;
+      const marker = L.marker([parseFloat(latitude), parseFloat(longitude)]).addTo(this.map);
+      const popupContent = `
+        <b>${name}</b><br/>
+        <i>${description}</i><br/>
+        Latitud: ${latitude}<br/>
+        Longitud: ${longitude}
+      `;
+      marker.bindPopup(popupContent).openPopup();
+    });
+
+   // var marker = L.marker([4.5710, -74.2974]).addTo(this.map);
+    //marker.bindPopup(this.CreateMapComponent("4.5710", "-74.2974")).openPopup();
 
     var popup = L.popup()
     .setLatLng([4.5810, -74.2877])
@@ -54,15 +67,7 @@ export class MapcomponetComponent implements OnInit{
     this.map.on('click', this.onMapClick, this);
 }
 
-private getAllMarks(){
-   this.mapService.getAllMarks().subscribe({
-    next: (response) => {
-      console.log('Marks', response);
-      this.marks = response;
-    },
-    error: (error) => console.error('Error occurred while getting all marks', error)
-  });
-}
+
 
 
 private onMapClick(e: { latlng: L.LatLngExpression; }){
@@ -91,7 +96,18 @@ private CreateMapComponent(latitude:string,longitude:string): HTMLElement{
 }
 
   ngOnInit(): void {
-    this.initMap();
+
+    this.mapService.getAllMarks().subscribe({
+      next: (response: mark[]) => {
+        //console.log('Marks', response);
+        this.mark = response;
+        console.log(this.mark);
+        this.initMap();
+      },
+      error: (error) => console.error('Error occurred while getting all marks', error)
+    });
+
+    
   }
   title = 'neotropic_sas_frontedtest';
 
