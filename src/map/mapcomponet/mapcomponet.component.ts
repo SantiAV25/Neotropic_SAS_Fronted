@@ -4,6 +4,7 @@ import { CreateMapComponent } from '../create-map/create-map.component';
 import { MapserviceService } from '../services/mapservice.service';
 import { mark } from '../models/mark';
 import { Observable } from 'rxjs';
+import { ShowMarkComponent } from '../show-mark/show-mark.component';
 
 @Component({
   selector: 'app-mapcomponet',
@@ -27,13 +28,18 @@ export class MapcomponetComponent implements OnInit{
 
   private initMap(): void{
     
+    const neotropic_icon = new L.Icon({
+      iconUrl: 'https://pbs.twimg.com/profile_images/2515554926/w32d5wtlvyygx48ba9sg_400x400.png',
+      iconSize: [60, 60],
+      iconAnchor: [20, 20],
+      popupAnchor: [1, -20]
+    });
+
     this.map = L.map('map', {
       center: this.centroid,
       zoom: 12
     });
 
-
-    console.log("Viene Las Marks");
      console.log(this.mark);
 
     const tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -45,24 +51,10 @@ export class MapcomponetComponent implements OnInit{
     tiles.addTo(this.map);
 
     this.mark.forEach((mark) => {
-      const { latitude, longitude, name, description } = mark;
-      const marker = L.marker([parseFloat(latitude), parseFloat(longitude)]).addTo(this.map);
-      const popupContent = `
-        <b>${name}</b><br/>
-        <i>${description}</i><br/>
-        Latitud: ${latitude}<br/>
-        Longitud: ${longitude}
-      `;
-      marker.bindPopup(popupContent).openPopup();
+      const { latitude, longitude, name, description, id} = mark;
+      const marker = L.marker([parseFloat(latitude), parseFloat(longitude)],{icon:neotropic_icon}).addTo(this.map);
+      marker.bindPopup(this.CreateShowMarkComponent(name,description,id,latitude,longitude)).openPopup();
     });
-
-   // var marker = L.marker([4.5710, -74.2974]).addTo(this.map);
-    //marker.bindPopup(this.CreateMapComponent("4.5710", "-74.2974")).openPopup();
-
-    var popup = L.popup()
-    .setLatLng([4.5810, -74.2877])
-    .setContent("<app-create-map></app-create-map>")
-    .openOn(this.map);
 
     this.map.on('click', this.onMapClick, this);
 }
@@ -80,6 +72,10 @@ private onMapClick(e: { latlng: L.LatLngExpression; }){
 
 private CreateMapComponent(latitude:string,longitude:string): HTMLElement{
   const creamapElement = document.createElement('div');
+  creamapElement.style.width = '300px'; // Ajusta el ancho según sea necesario
+  creamapElement.style.height = '300px'; // Ajusta la altura según sea necesario
+  creamapElement.style.overflow = 'auto'; // Asegura que el contenido no se desborde
+  
   const factory = this.resolver.resolveComponentFactory(CreateMapComponent);
   const componentRef = factory.create(this.injector, [], creamapElement);
 
@@ -92,6 +88,30 @@ private CreateMapComponent(latitude:string,longitude:string): HTMLElement{
     this.appRef.detachView(componentRef.hostView);
   });
   return creamapElement;
+  
+}
+
+private CreateShowMarkComponent(name:string,description:string,id:string,latitude:string,longitude:string): HTMLElement{
+  const showMarkElement = document.createElement('div');
+  showMarkElement.style.width = '200px'; // Ajusta el ancho según sea necesario
+  showMarkElement.style.height = '200px'; // Ajusta la altura según sea necesario
+  showMarkElement.style.overflow = 'auto'; // Asegura que el contenido no se desborde
+  
+  const factory = this.resolver.resolveComponentFactory(ShowMarkComponent);
+  const componentRef = factory.create(this.injector, [], showMarkElement);
+
+  //passing the data to the componet
+  componentRef.instance.name = name;
+  componentRef.instance.description = description;
+  componentRef.instance.id = id;
+  componentRef.instance.latitude = latitude;
+  componentRef.instance.longitude = longitude;
+
+  this.appRef.attachView(componentRef.hostView);
+  componentRef.onDestroy(() => {
+    this.appRef.detachView(componentRef.hostView);
+  });
+  return showMarkElement;
   
 }
 

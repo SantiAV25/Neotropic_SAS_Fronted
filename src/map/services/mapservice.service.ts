@@ -32,6 +32,15 @@ export class MapserviceService {
     );
   }
 
+  deleteMark(mark: mark):Observable<mark>{
+    return this.http.delete<mark>(`${this.thirdApiUrl}/deleteMark`, { body: mark }).pipe(
+      catchError((error) => {
+        console.error('Error occurred: ', error); // Log the error to the console
+        return throwError(() => new Error('Error occurred while deleting a mark')); // Rethrow the error as a new Observable error
+      })
+    );
+  }
+
 
 
 }

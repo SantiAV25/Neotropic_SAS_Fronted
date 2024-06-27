@@ -34,7 +34,10 @@ OnSubmit(){
   alert('Formulario enviado');
 
   this.mapService.createMark(this.formMark.value).subscribe({
-    next: (response) => console.log('Mark added', response),
+    next: (response) => {
+      console.log('Mark added', response);
+      window.location.reload();
+    },
     error: (error) => console.error('Error occurred while adding a mark', error)
   });
   
