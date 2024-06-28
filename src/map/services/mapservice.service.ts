@@ -8,7 +8,7 @@ import { Observable, catchError, map, throwError } from 'rxjs';
 })
 export class MapserviceService {
 
-  private thirdApiUrl = "http://localhost:8080/api/neutropicmap"
+  private thirdApiUrl = "https://neotropicsasbackendtest-production.up.railway.app/api/neutropicmap"
 
   constructor(private http: HttpClient){
   }

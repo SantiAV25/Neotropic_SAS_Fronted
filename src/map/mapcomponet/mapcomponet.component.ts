@@ -28,13 +28,6 @@ export class MapcomponetComponent implements OnInit{
 
   private initMap(): void{
     
-    const neotropic_icon = new L.Icon({
-      iconUrl: 'https://pbs.twimg.com/profile_images/2515554926/w32d5wtlvyygx48ba9sg_400x400.png',
-      iconSize: [60, 60],
-      iconAnchor: [20, 20],
-      popupAnchor: [1, -20]
-    });
-
     this.map = L.map('map', {
       center: this.centroid,
       zoom: 12
@@ -42,7 +35,7 @@ export class MapcomponetComponent implements OnInit{
 
      console.log(this.mark);
 
-    const tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    const tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 18,
       minZoom: 10,
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -50,15 +43,25 @@ export class MapcomponetComponent implements OnInit{
 
     tiles.addTo(this.map);
 
-    this.mark.forEach((mark) => {
-      const { latitude, longitude, name, description, id} = mark;
-      const marker = L.marker([parseFloat(latitude), parseFloat(longitude)],{icon:neotropic_icon}).addTo(this.map);
-      marker.bindPopup(this.CreateShowMarkComponent(name,description,id,latitude,longitude)).openPopup();
-    });
-
     this.map.on('click', this.onMapClick, this);
 }
 
+private addMarkToMap(){   
+  
+  const neotropic_icon = new L.Icon({
+    iconUrl: 'https://pbs.twimg.com/profile_images/2515554926/w32d5wtlvyygx48ba9sg_400x400.png',
+    iconSize: [60, 60],
+    iconAnchor: [20, 20],
+    popupAnchor: [1, -20]
+  });
+
+  this.mark.forEach((mark) => {
+  const { latitude, longitude, name, description, id} = mark;
+  const marker = L.marker([parseFloat(latitude), parseFloat(longitude)],{icon:neotropic_icon}).addTo(this.map);
+  marker.bindPopup(this.CreateShowMarkComponent(name,description,id,latitude,longitude)).openPopup();
+});
+
+}
 
 
 
@@ -122,10 +125,12 @@ private CreateShowMarkComponent(name:string,description:string,id:string,latitud
         //console.log('Marks', response);
         this.mark = response;
         console.log(this.mark);
-        this.initMap();
+        this.addMarkToMap();
       },
       error: (error) => console.error('Error occurred while getting all marks', error)
     });
+
+    this.initMap();
 
     
   }
