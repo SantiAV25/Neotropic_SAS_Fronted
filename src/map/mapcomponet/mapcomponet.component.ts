@@ -49,8 +49,8 @@ export class MapcomponetComponent implements OnInit{
 private addMarkToMap(){   
   
   const neotropic_icon = new L.Icon({
-    iconUrl: 'https://pbs.twimg.com/profile_images/2515554926/w32d5wtlvyygx48ba9sg_400x400.png',
-    iconSize: [60, 60],
+    iconUrl: 'https://b2bmarketplace.procolombia.co/sites/default/files/styles/max_325x325/public/companies/neotropic-sas.jpeg',
+    iconSize: [70, 70],
     iconAnchor: [20, 20],
     popupAnchor: [1, -20]
   });
@@ -76,7 +76,7 @@ private onMapClick(e: { latlng: L.LatLngExpression; }){
 private CreateMapComponent(latitude:string,longitude:string): HTMLElement{
   const creamapElement = document.createElement('div');
   creamapElement.style.width = '300px'; // Ajusta el ancho según sea necesario
-  creamapElement.style.height = '300px'; // Ajusta la altura según sea necesario
+  creamapElement.style.height = '400px'; // Ajusta la altura según sea necesario
   creamapElement.style.overflow = 'auto'; // Asegura que el contenido no se desborde
   
   const factory = this.resolver.resolveComponentFactory(CreateMapComponent);
@@ -85,6 +85,10 @@ private CreateMapComponent(latitude:string,longitude:string): HTMLElement{
   //passing the data to the componet
   componentRef.instance.latitude = latitude;
   componentRef.instance.longitude = longitude;
+
+  this.appRef.attachView(componentRef.hostView);
+  componentRef.changeDetectorRef.detectChanges();
+
 
   this.appRef.attachView(componentRef.hostView);
   componentRef.onDestroy(() => {

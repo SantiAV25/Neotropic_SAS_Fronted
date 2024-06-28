@@ -2,17 +2,23 @@
 <form (submit)="OnSubmit()"  [formGroup]="formMark" class="d-flex justify-content-center align-items-center flex-column w-100 h-100">
     <div class="d-flex flex-column justify-content-center align-items-center">
     <div class="mb-3 d-flex flex-column justify-content-center align-items-center">
-        <label class="form-label" for="name">Nombre del Punto</label>
-        <input formControlName="name" type="text"  class="form-control" id="name" placeholder="Nombre del mapa">
+        <label class="form-label" for="name">Marker name</label>
+        <input formControlName="name" type="text"  class="form-control" id="name" placeholder="Marker Name">
+        <div class="text-danger" *ngIf="formMark.get('name')?.invalid && (formMark.get('name')?.dirty || formMark.get('name')?.touched)">
+            <p>The name is required</p>
+        </div>
     </div>
     <div class="mb-3 d-flex flex-column justify-content-center align-items-center">
-        <label class="form-label" for="Descripcion">Descripcion del Punto</label>
-        <input formControlName="description" type="text" class="form-control" id="Description" placeholder="Nombre del mapa">
+        <label class="form-label" for="Descripcion">Marker description</label>
+        <textarea formControlName="description" class="form-control" id="description" rows="3" placeholder="Marker description"></textarea>
+        <div class="text-danger" *ngIf="formMark.get('description')?.invalid && (formMark.get('description')?.dirty || formMark.get('description')?.touched)">
+            <p>The description is required</p>
+        </div>
     </div>
     <input formControlName="latitude" type="hidden" [value]="latitude">
-    <label class="form-label m-2 ml-8" >Se va a Crear Un Punto en la latitude: {{latitude}}</label>
+    <label class="form-label m-2" >A point will be created at latitude: {{latitude}}</label>
     <input formControlName="longitude" type="hidden" [value]="longitude">
-    <label class="form-label m-2 ml-8">Se va a Crear Un Punto en la longitud: {{longitude}}</label>
-    <button class="btn btn-primary" type="submit">Crear Punto</button>
+    <label class="form-label m-2">A point will be created at longitude: {{longitude}}</label>
+    <button class="btn btn-primary" type="submit">Create Marker</button>
 </div>
 </form>
